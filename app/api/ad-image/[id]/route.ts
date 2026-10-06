@@ -1,0 +1,4 @@
+import {getDb} from "@/db";
+import {adStorage} from "@/lib/ad-storage";
+import {isAdmin} from "@/lib/admin-auth";
+export async function GET(req:Request,{params}:{params:Promise<{id:string}>}){try{const {id}=await params;if(!/^[a-f0-9-]{36}$/.test(id))return new Response(null,{status:404});const row=await getDb().$client.prepare('SELECT active FROM advertisements WHERE image_key=?').bind(id).first<{active:number}>();if(!row||(!row.active&&!await isAdmin()))return new Response(null,{status:404});const image=await adStorage().get(id);if(!image)return new Response(null,{status:404});return new Response(image.body,{headers:{'Content-Type':image.httpMetadata?.contentType||'image/png','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});}catch{return new Response(null,{status:503});}}
