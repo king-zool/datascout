@@ -44,3 +44,9 @@ next-env.d.ts
 /.codex/
 /outputs/
 /work/
+
+!.env.example
+*.db
+*.db-shm
+*.db-wal
+*.tsbuildinfo
